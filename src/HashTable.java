@@ -1,47 +1,90 @@
-public class HashTable {
+class HashTable{
+    // Clase interna para representar cada nodo de la lista
     private class Nodo{
-        int clave;String valor;Nodo sig;
-        Nodo(int c,String v){clave=c;valor=v;}
-    }
-    private Nodo[] tabla;int cap;
-    public HashTable(int c){cap=c;tabla=new Nodo[c];}
-    private int hash(int k){return k%cap;}
-    public void put(int k,String v){
-        int i=hash(k);Nodo n=tabla[i];
-        while(n!=null){if(n.clave==k){n.valor=v;return;}n=n.sig;}
-        Nodo nuevo=new Nodo(k,v);nuevo.sig=tabla[i];tabla[i]=nuevo;
-    }
-    public String get(int k){
-        int i=hash(k);Nodo n=tabla[i];
-        while(n!=null){if(n.clave==k)return n.valor;n=n.sig;}
-        return null;
-    }
-    public void remove(int k){
-        int i=hash(k);Nodo n=tabla[i],p=null;
-        while(n!=null){
-            if(n.clave==k){if(p==null)tabla[i]=n.sig;else p.sig=n.sig;return;}
-            p=n;n=n.sig;
+        int clave;
+        String valor;
+        Nodo sig;
+        Nodo(int c,String v){
+            clave=c;
+            valor=v;
+            sig=null;
         }
     }
+
+    private Nodo[] tabla;
+    private int capacidad;
+
+    public HashTable(int cap){
+        capacidad=cap;
+        tabla=new Nodo[capacidad];
+    }
+
+    private int hash(int clave){
+        return clave%capacidad;
+    }
+
+    public void insertar(int clave,String valor){
+        int indice=hash(clave);
+        Nodo actual=tabla[indice];
+        while(actual!=null){
+            if(actual.clave==clave){
+                actual.valor=valor; // si la clave existe, actualiza
+                return;
+            }
+            actual=actual.sig;
+        }
+        Nodo nuevo=new Nodo(clave,valor);
+        nuevo.sig=tabla[indice];
+        tabla[indice]=nuevo;
+    }
+
+    public String obtener(int clave){
+        int indice=hash(clave);
+        Nodo actual=tabla[indice];
+        while(actual!=null){
+            if(actual.clave==clave)return actual.valor;
+            actual=actual.sig;
+        }
+        return null;
+    }
+
+    public void eliminar(int clave){
+        int indice=hash(clave);
+        Nodo actual=tabla[indice],previo=null;
+        while(actual!=null){
+            if(actual.clave==clave){
+                if(previo==null)tabla[indice]=actual.sig;
+                else previo.sig=actual.sig;
+                return;
+            }
+            previo=actual;
+            actual=actual.sig;
+        }
+    }
+
     public void mostrar(){
-        for(int i=0;i<cap;i++){
-            System.out.print(i+":");
-            Nodo n=tabla[i];
-            while(n!=null){System.out.print("("+n.clave+","+n.valor+")");n=n.sig;}
+        for(int i=0;i<capacidad;i++){
+            System.out.print(i+": ");
+            Nodo actual=tabla[i];
+            while(actual!=null){
+                System.out.print("("+actual.clave+","+actual.valor+") ");
+                actual=actual.sig;
+            }
             System.out.println();
         }
     }
 }
+
 public class Main{
     public static void main(String[] args){
         HashTable h=new HashTable(5);
-        h.put(1,"Yetsy");
-        h.put(2,"Andrea");
-        h.put(3,"Choque");
-        h.put(8,"Tunque"); // colisión con 3
+        h.insertar(1,"Yetsy");
+        h.insertar(2,"Andrea");
+        h.insertar(3,"Choque");
+        h.insertar(8,"Tunque"); // colisión con clave 3
         h.mostrar();
-        System.out.println("Clave 2:"+h.get(2));
-        h.remove(3);
+        System.out.println("Clave 2 -> "+h.obtener(2));
+        h.eliminar(3);
         h.mostrar();
     }
 }
